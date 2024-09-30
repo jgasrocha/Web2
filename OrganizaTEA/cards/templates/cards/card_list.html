@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Cards</title>
+    {% load static %}
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #f0f8ff;
+        }
+        .card {
+            height: 300px;
+            border: 2px solid #4a90e2;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 20px; /* Espaço entre os cards */
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .card-title {
+            height: 3rem;
+            line-height: 1.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .modal-content {
+            background-color: #e7f3fe;
+        }
+        .modal-header {
+            border-bottom: 2px solid #4a90e2;
+        }
+        .interval {
+            text-align: center;
+            font-size: 2rem;
+            margin: 20px 0;
+            color: #4a90e2;
+        }
+        .grid-container {
+            margin-bottom: 40px; /* Adiciona espaço entre os grids */
+        }
+        .placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            cursor: pointer;
+            color: #4a90e2; /* Cor do texto do placeholder */
+            font-size: 1.5rem; /* Tamanho do texto do placeholder */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'home' %}">OrganizaTEA</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_panel' %}">
+                            <i class="fas fa-users"></i> Usuários
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger my-2 my-sm-0">Sair</a>
+                {% endif %}
+            </form> 
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Agenda Escolar</h1>
+
+        <!-- Primeiro Grid -->
+        <div class="grid-container row" id="card-container-1">
+            {% for card in cards|slice:":20" %}
+                <div class="col-md-2 mb-4">
+                    <div class="card">
+                        {% if card %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ card.title }}</h5>
+                                <img class="card-img-top" src="{{ card.professor_image.url }}" alt="Imagem do Professor">
+                                <p class="card-text">{{ card.description }}</p>
+                            </div>
+                        {% else %}
+                            <div class="placeholder" data-toggle="modal" data-target="#createCardModal">
+                                Adicionar
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if card %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <a href="{% url 'card_edit' card.pk %}" class="btn btn-warning">Editar</a>
+                            <a href="{% url 'card_delete' card.pk %}" class="btn btn-danger">Excluir</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="interval">Intervalo</div>
+
+        <!-- Segundo Grid -->
+        <div class="grid-container row" id="card-container-2">
+            {% for card in cards|slice:"20:40" %}
+                <div class="col-md-2 mb-4">
+                    <div class="card">
+                        {% if card %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ card.title }}</h5>
+                                <img class="card-img-top" src="{{ card.professor_image.url }}" alt="Imagem do Professor">
+                                <p class="card-text">{{ card.description }}</p>
+                            </div>
+                        {% else %}
+                            <div class="placeholder" data-toggle="modal" data-target="#createCardModal">
+                                Adicionar
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if card %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <a href="{% url 'card_edit' card.pk %}" class="btn btn-warning">Editar</a>
+                            <a href="{% url 'card_delete' card.pk %}" class="btn btn-danger">Excluir</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Modal para Criar Novo Card -->
+    <div class="modal fade" id="createCardModal" tabindex="-1" role="dialog" aria-labelledby="createCardLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createCardLabel">Criar Novo Card</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="createCardForm" method="POST" enctype="multipart/form-data" action="{% url 'card_create' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="title">Título</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Descrição</label>
+                            <textarea class="form-control" id="description" name="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="professor_image">Imagem do Professor</label>
+                            <input type="file" class="form-control-file" id="professor_image" name="professor_image" accept="image/*" required onchange="previewImage(this, 'professorImagePreview')">
+                            <img id="professorImagePreview" class="img-fluid mt-2" src="#" alt="Pré-visualização da Imagem do Professor" style="display:none;">
+                        </div>
+                        <div class="form-group">
+                            <label for="location_image">Imagem da Localização</label>
+                            <input type="file" class="form-control-file" id="location_image" name="location_image" accept="image/*" required onchange="previewImage(this, 'locationImagePreview')">
+                            <img id="locationImagePreview" class="img-fluid mt-2" src="#" alt="Pré-visualização da Imagem da Localização" style="display:none;">
+                        </div>
+                        <button type="submit" class="btn btn-success">Criar Card</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(input, previewId) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById(previewId).src = e.target.result;
+                document.getElementById(previewId).style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>

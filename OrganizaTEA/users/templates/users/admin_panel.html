@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Administração</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Painel de Administração</h1>
+        <a href="{% url 'card_management' %}" class="btn btn-primary">Gerenciar Cards</a>
+        <a href="{% url 'user_management' %}" class="btn btn-primary">Gerenciar Usuários</a>
+    </div>
+</body>
+</html>

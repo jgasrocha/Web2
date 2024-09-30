@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% if card %}Editar Card{% else %}Criar Card{% endif %}</title>
+</head>
+<body>
+    <h1>{% if card %}Editar Card{% else %}Criar Card{% endif %}</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Título:</label>
+        <input type="text" name="title" value="{{ card.title|default:'' }}" required><br>
+
+        <label>Imagem do Professor:</label>
+        <input type="file" name="professor_image" required><br>
+
+        <label>Imagem do Local:</label>
+        <input type="file" name="location_image" required><br>
+
+        <label>Descrição:</label>
+        <textarea name="description" required>{{ card.description|default:'' }}</textarea><br>
+
+        <button type="submit">{% if card %}Salvar Alterações{% else %}Criar Card{% endif %}</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,44 @@
+/* styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adapta as colunas */
+    gap: 15px; /* Espaçamento entre os cards */
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.professor-image,
+.location-image {
+    width: 100px;  /* Largura fixa */
+    height: 100px; /* Altura fixa */
+    object-fit: cover; /* Ajusta a imagem para cobrir a área, mantendo a proporção */
+    margin-bottom: 10px; /* Espaço abaixo da imagem */
+}
+
+/* Estilo adicional para links */
+a {
+    display: inline-block;
+    margin-top: 5px;
+    color: #007BFF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
